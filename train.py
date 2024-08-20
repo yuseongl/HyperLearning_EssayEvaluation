@@ -4,6 +4,8 @@ import torchmetrics
 import numpy as np
 import pandas as pd
 import argparse
+import os
+import json
 
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
@@ -18,7 +20,14 @@ import warnings
 warnings.filterwarnings('ignore')
 
 torch.manual_seed(777)
-device = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backend.mps.is_available() else 'cpu'
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+def load_config(config_file):
+    script_dir = os.getcwd()  # 현재 스크립트 파일의 디렉토리 경로
+    config_path = os.path.join(script_dir, config_file)
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    return config
 
 def train(
     model:nn.Module,
@@ -78,7 +87,7 @@ def evaluate(
   total_loss = total_loss/len(data_loader.dataset)
   return total_loss 
 
-def run():
+def run(config):
     
     X,y = preprocess('data/1.Training/라벨링데이터/')
     #X,y = preprocess('data/2.Validation/라벨링데이터/')
@@ -96,38 +105,35 @@ def run():
     }
     
     model = ANN(X_train.shape[-1])
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
     
-    if args.train:
-        pbar = range(args.epochs)
-        if args.pbar:
-            pbar = tqdm(pbar)
+    pbar = range(config.epochs)
+    pbar = tqdm(pbar)
         
-        print("Learning Start!")
-        for _ in pbar:
-            loss = train(model, RMSELoss(), optimizer, dl, device)
-            history['lr'].append(optimizer.param_groups[0]['lr'])
-            history['loss'].append(loss) 
-            pbar.set_postfix(trn_loss=loss)
-              
-        print("Done!")
-        torch.save(model.state_dict(), args.output+args.name+'.pth')
-        
-        
-        
-        model = ANN(X_trn.shape[-1]).to(device)
-        model.load_state_dict(torch.load(args.output+args.name+'.pth'))
-        model.eval()
-        
-        pred = []
-        with torch.inference_mode():
-            for x in dl_val:
-                x = x[0].to(device)
-                out = model(x)
-                pred.append(out.detach().cpu().numpy())
+    print("Learning Start!")
+    for _ in pbar:
+        loss = train(model, MSELoss(), optimizer, dl, device)
+        history['lr'].append(optimizer.param_groups[0]['lr'])
+        history['loss'].append(loss) 
+        pbar.set_postfix(trn_loss=loss)
+            
+    print("Done!")
+    torch.save(model.state_dict(), args.output+args.name+'.pth')
     
+    model = ANN(X_trn.shape[-1]).to(device)
+    model.load_state_dict(torch.load(args.output+args.name+'.pth'))
+    model.eval()
+    
+    pred = []
+    with torch.inference_mode():
+        for x in dl_val:
+            x = x[0].to(device)
+            out = model(x)
+            pred.append(out.detach().cpu().numpy())
     
     return
 
 if __name__ == "__main__":
-  run()
+    config_file = "src/configs/config.json"
+    config = load_config(config_file)
+    run(config)

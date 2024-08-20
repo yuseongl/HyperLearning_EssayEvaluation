@@ -8,7 +8,7 @@ def svd(data):
     
     return df_emb
 
-def get_svd_data(data, emb_data, reduction=True):
+def get_svd_data(data, emb_data, reduction=False):
     if reduction == True:
         emb_data = svd(emb_data)
     df = pd.concat([data, emb_data], axis=1)
