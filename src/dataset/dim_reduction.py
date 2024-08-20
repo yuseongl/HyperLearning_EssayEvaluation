@@ -1,3 +1,4 @@
+import pandas as pd
 from sklearn.decomposition import TruncatedSVD
 
 def svd(data):
@@ -5,7 +6,7 @@ def svd(data):
     emb_svd = svd.fit_transform(data)
     df_emb = pd.DataFrame(emb_svd)
     
-    return df
+    return df_emb
 
 def get_svd_data(data, emb_data, reduction=True):
     if reduction == True:

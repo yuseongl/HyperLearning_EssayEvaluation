@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import argparse
 
+from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
 from typing import Optional
 from tqdm.auto import tqdm
@@ -17,6 +18,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 torch.manual_seed(777)
+device = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backend.mps.is_available() else 'cpu'
 
 def train(
     model:nn.Module,
@@ -79,6 +81,7 @@ def evaluate(
 def run():
     
     X,y = preprocess('data/1.Training/라벨링데이터/')
+    #X,y = preprocess('data/2.Validation/라벨링데이터/')
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
     
     ds_train = CustomDataset(X_train, y_train)
