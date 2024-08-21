@@ -1,4 +1,4 @@
-from tqdm import tqdm
+import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
@@ -45,15 +45,14 @@ def preprocess(path, embedding=False):
     
     df_data.reset_index(inplace=True)
     main_df = get_svd_data(df_data, df_emb_data)
-    main_df.set_index('id', inplace=True)
     
-    df_x = main_df.loc[data_idx]
-    y = round(df_x['scores'], 2)
-    X = df_x.drop(columns=['scores'])
+    #df_x = main_df.loc[data_idx]
+    y = round(main_df['scores'], 2)
+    X = main_df.drop(columns=['scores','id'])
 
     X['grade']=X['grade'].astype('int')
     X['levels']=X['levels'].astype('int')
     
-    return X, y
+    return X.to_numpy(dtype=np.float32), y.to_numpy(dtype=np.float32)
 
     

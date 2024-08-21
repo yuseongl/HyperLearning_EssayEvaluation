@@ -1,11 +1,11 @@
 {
     "model_type" : "ensemble",
-    "batch_size": 32,
-    "learning_rate": 0.0001,
-    "epochs": 10,
+    "batch_size": 64,
+    "learning_rate": 0.00001,
+    "epochs": 500,
     "resize" : 224,
     "patiece" : 10000,
-    "name" : "32_LeakyReLU_310epoch_landmark_pretrained_learn",
+    "name" : "test",
     "scheduler":{
         "mode":"True",
         "T_0":10,

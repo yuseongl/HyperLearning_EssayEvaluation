@@ -1,6 +1,5 @@
 import numpy as np
 from torch.utils.data import Dataset
-from typing import List
 
 class CustomDataset(Dataset):
   def __init__(self, *args:list[np.array]):
@@ -9,6 +8,8 @@ class CustomDataset(Dataset):
     
   def __getitem__(self, index):
     return tuple(x[index] for x in self.data)
+    
 
   def __len__(self):
     return self.data[0].shape[0]
+  
