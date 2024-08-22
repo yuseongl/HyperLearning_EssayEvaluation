@@ -55,6 +55,7 @@ project for HyperLearning Essay Evaluation using supervised learning model
 - 에세이를 평가할 때 주요한 요소 파악 후 feature추가 선택
 - 에세이 평가 요소 파악 후 띄어쓰기 검사, 문법 교정, 어미, 어순, 체언의 수 등의 정보 활용 고려
 - 평가 방법 고려
+- k-fold validation을 활용한 모델 평가 기법 도입
 
 ### 개발 환경
 |IDE|GPU 서버|프로그래밍 언어|
