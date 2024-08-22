@@ -68,6 +68,9 @@ project for HyperLearning Essay Evaluation using supervised learning model
 # 해당 경로 안에 embedding_data.csv 존재
 ```
 
+
+
+
 ## 시작 가이드
 ### Installation
 ```
