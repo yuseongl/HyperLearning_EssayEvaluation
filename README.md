@@ -40,6 +40,8 @@ project for HyperLearning Essay Evaluation using supervised learning model
 
 ### 결과
 - MAE 기준 약 2.5 의 성능을 보임
+- MSE 기준 약 8.8 의 성능을 보임
+- r2score 약 0.1 로 매우 약간 설명력을 보임
 
 ### 문제점
 - 프로토타입이라 학습에 사용한 데이터(약 12000개)가 적어서 과적합과 이상치에 취약한 문제가 있음
