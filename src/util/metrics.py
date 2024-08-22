@@ -7,7 +7,7 @@ def metrics(y_true, y_pred):
     'MAE':[],
     'R2SCORE':[]
     }
-    
+    print(y_pred.shape)
     scores['MSE'].append(mean_squared_error(y_true, y_pred))
     scores['MAE'].append(mean_absolute_error(y_true, y_pred))
     scores['R2SCORE'].append(r2_score(y_true, y_pred))

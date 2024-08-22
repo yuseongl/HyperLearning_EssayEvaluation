@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 from .get_data import get_data_in_file
-from .dim_reduction import get_svd_data
+from .dim_reduction import svd_concat_data
 from ..embeding.text_embeding import Embedding
 
 def preprocess(path, embedding=False):
@@ -20,9 +20,7 @@ def preprocess(path, embedding=False):
     '''
     
     df = get_data_in_file(path)
-    
     df_data = df.set_index('id')
-    data_idx = df_data.index
     
     df_data['essay']= df_data['essay'].str.replace('#@문장구분#', '')
     
@@ -41,18 +39,13 @@ def preprocess(path, embedding=False):
         Embedding_ = Embedding()
         df_emb_data = Embedding_.make_emb(df_data, path)
     else:
-        df_emb_data = pd.read_csv(path+'embedding_data'+'.csv')
+        df_emb_data = pd.read_csv(path+'embedding_data'+'.csv')   
+    main_df = svd_concat_data(df_data, df_emb_data, reduction=False)
     
-    df_data.reset_index(inplace=True)
-    main_df = get_svd_data(df_data, df_emb_data)
-    
-    #df_x = main_df.loc[data_idx]
     y = round(main_df['scores'], 2)
     X = main_df.drop(columns=['scores','id'])
 
     X['grade']=X['grade'].astype('int')
     X['levels']=X['levels'].astype('int')
-    
-    return X.to_numpy(dtype=np.float32), y.to_numpy(dtype=np.float32)
 
-    
+    return X.to_numpy(dtype=np.float32), y.to_numpy(dtype=np.float32)

@@ -10,15 +10,32 @@ class ANN(nn.Module):
   '''
   def __init__(self, input:int=775, hidden:int=2048):
     super().__init__()
-    self.linear_stack = nn.Sequential(
-        nn.Linear(input,hidden),      #(18,32)
-        nn.LeakyReLU(),
-        #nn.Dropout(0.3),
-        nn.Linear(hidden,hidden),   #(32,64)
-        nn.LeakyReLU(),
-        nn.Linear(hidden,1),        #(128,1)
+    self.main_block = nn.Sequential(
+        nn.Linear(input,hidden),     
+        nn.PReLU(),
+        nn.Linear(hidden,hidden),   
+        nn.PReLU(),
+        nn.Linear(hidden,hidden//4),   
+        )
+    self.res_block_1 = nn.Sequential(
+        nn.Linear(hidden//4,hidden),     
+        nn.PReLU(),
+        nn.Linear(hidden,hidden//4),   
+        )
+    self.res_block_2 = nn.Sequential(
+        nn.Linear(hidden//4,hidden),     
+        nn.PReLU(),
+        nn.Linear(hidden,hidden//4),   
+        )
+    self.fc_block = nn.Sequential(
+        nn.Linear(hidden//4,hidden),     
+        nn.PReLU(),
+        nn.Linear(hidden,1),   
         )
     
   def forward(self, x:list):
-    x = self.linear_stack(x)
+    x = self.main_block(x)
+    x_1 = self.res_block_1(x)
+    x_2 = self.res_block_2(x-x_1)
+    x = self.fc_block(x-x_1-x_2)
     return x

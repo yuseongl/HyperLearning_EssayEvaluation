@@ -8,9 +8,11 @@ def svd(data):
     
     return df_emb
 
-def get_svd_data(data, emb_data, reduction=False):
+def svd_concat_data(data, emb_data, reduction=False):
+    data.reset_index(inplace=True)
     if reduction == True:
         emb_data = svd(emb_data)
+        
     df = pd.concat([data, emb_data], axis=1)
     df.drop(columns=['essay'], inplace=True) # text data는 임베딩 값으로 대체되므로 삭제 
     

@@ -3,12 +3,15 @@ import torch.nn as nn
 import torchmetrics
 import os
 import json
+import numpy as np
 
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 from typing import Optional
 from tqdm.auto import tqdm
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
+from src.models.model_selection import get_model
 from src.dataset.preprocess import preprocess
 from src.util.dataset import CustomDataset
 from src.models.ANN import ANN
@@ -99,12 +102,11 @@ def evaluation(
         device: device
     '''
     model.eval()
-    pred = []
     with torch.inference_mode():
         for x, _ in data_loader:
             x = x.to(device)
-            out = model(x)
-            pred.append(out.detach().cpu().numpy())
+            pred = model(x)
+            pred = pred.detach().cpu().numpy()
     return pred
 
 def run(config):
@@ -119,7 +121,7 @@ def run(config):
     # test data 전처리
     X,y = preprocess('data/2.Validation/라벨링데이터/')
     ds_test = CustomDataset(X,y)
-    dl_test = DataLoader(ds_test, batch_size=config['batch_size'])
+    dl_test = DataLoader(ds_test, batch_size=X.shape[0])
     
     history = {
     'loss':[],
@@ -127,8 +129,11 @@ def run(config):
     'lr':[]
     }
     
-    model = ANN(X_train.shape[-1]).to(device)
+    model = get_model(config=config['model_type']).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learning_rate'])
+    scheduler = CosineAnnealingWarmRestarts(optimizer, config['scheduler']["T_0"], 
+                                            config['scheduler']["T_mult"], 
+                                            config['scheduler']["eta_min"])
     print(model)
     pbar = range(config['epochs'])
     pbar = tqdm(pbar)
@@ -136,22 +141,19 @@ def run(config):
     print("Learning Start!")
     for _ in pbar:
         loss = train(model, nn.MSELoss(), optimizer, dl_train, device)
+        scheduler.step(loss)
         history['lr'].append(optimizer.param_groups[0]['lr'])
         history['loss'].append(loss) 
         val_loss = validation(model, nn.MSELoss(), dl_val, device)
-        pbar.set_postfix(trn_loss=loss, val_loss=val_loss)
+        pbar.set_postfix(trn_loss=loss, val_loss=val_loss, ir=optimizer.param_groups[0]['lr'])
             
     print("Done!")
     torch.save(model.state_dict(), config['name']+'.pth')
 
-    pred = evaluation(model, dl_test, device)
-    
+    pred = evaluation(model, dl_test, device) 
     metric_score = metrics(y, pred)
-    
     print(metric_score)
             
-    
-    
     return
 
 if __name__ == "__main__":

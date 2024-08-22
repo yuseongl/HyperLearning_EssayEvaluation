@@ -1,16 +1,16 @@
 {
-    "model_type" : "ensemble",
-    "batch_size": 64,
+    "model_type" : "Multi_View_Net",
+    "batch_size": 4096,
     "learning_rate": 0.00001,
-    "epochs": 500,
+    "epochs": 750,
     "resize" : 224,
     "patiece" : 10000,
-    "name" : "test",
+    "name" : "test_",
     "scheduler":{
         "mode":"True",
-        "T_0":10,
+        "T_0":50,
         "T_mult":2,
-        "eta_min":0.000001
+        "eta_min":0.00000001
     }
 }
 
