@@ -32,6 +32,7 @@ project for HyperLearning Essay Evaluation using supervised learning model
 - 글 형식 컬럼은 원-핫 인코딩 진행
 - bert 모델을 사용해 문맥 정보가 포함된 embedding 데이터 추출
 - 특이점 분해를 이용한 embedding 데이터 차원 축소
+- 다중공선 문제가 있는 feature를 모아서 따로 컬럼모음을 만듦
 
 ### 모델
 1. 텍스트 데이터와 feature의 상호작용을 고려한 모델 구현
