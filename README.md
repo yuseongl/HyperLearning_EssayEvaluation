@@ -68,17 +68,6 @@ project for HyperLearning Essay Evaluation using supervised learning model
 # 해당 경로 안에 embedding_data.csv 존재
 ```
 
-```
-train dataset
-data/train/image/감정 - 감정별 디렉터리명 안에 이미지 존재
-data/train/label/ - 감정별 라벨링된 JSON 파일
-```
-```
-test dataset
-test_set1000/image/감정 - 감정별 디렉터리명 안에 이미지 존재
-test_set1000/label - 감정별 라벨링된 JSON 파일
-```
-
 ## 시작 가이드
 ### Installation
 ```
